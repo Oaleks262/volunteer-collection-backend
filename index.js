@@ -1,3 +1,4 @@
+
 import express from "express";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -9,12 +10,18 @@ import UserModel from "./models/User.js";
 import BankModel from "./models/Bank.js";
 import TitleModel from "./models/Title.js";
 import AboutModel from "./models/About.js";
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const dbConnectionString = process.env.DB_CONNECTION_STRING;
+const secretKey = process.env.SECRET_KEY;
 
 
 
 
 
-mongoose.connect('mongodb+srv://Admin:qwer1234@cluster0.lyfarnn.mongodb.net/baza?retryWrites=true&w=majority')
+mongoose.connect(dbConnectionString)
 .then(()=>{console.log('DB ok')})
 .catch((err)=> {console.log('DB error', err)});
 
@@ -40,7 +47,7 @@ app.post('/auth/login', loginValidator, async (req, res) => {
             return res.status(401).json({ message: "Неправильний пароль" });
         }
 
-        const token = jwt.sign({ _id: user._id }, 'secret123', { expiresIn: '30d' });
+        const token = jwt.sign({ _id: user._id }, secretKey, { expiresIn: '30d' });
 
         const { passwordHash, ...userData } = user._doc;
 
@@ -69,7 +76,7 @@ app.post('/auth/register' , registerValidator, async (req, res)=>{
     const user = await doc.save();
     const token =jwt.sign({
         _id: user._id
-    }, 'secret123',{
+    }, secretKey,{
         expiresIn: '30d'
     })
     const {passwordHash, ...userData} = user._doc
@@ -87,7 +94,7 @@ const authenticateToken = (req, res, next) => {
         return res.status(401).json({ message: "Немає токену. Доступ заборонено." });
     }
 
-    jwt.verify(token, 'secret123', (err, user) => {
+    jwt.verify(token, secretKey, (err, user) => {
         if (err) {
             return res.status(403).json({ message: "Невірний токен. Доступ заборонено." });
         }
@@ -255,11 +262,10 @@ app.put('/admin/about', authenticateToken, async (req, res) => {
 
 
 
-app.listen(4444, (err) => {
-    if (err){
+app.listen(process.env.PORT || 4444, (err) => {
+    if (err) {
         return console.log(err);
-    }
-    else{
+    } else {
         console.log('Server OK');
     }
 });
