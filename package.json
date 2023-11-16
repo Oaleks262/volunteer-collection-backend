@@ -1,11 +1,10 @@
 {
   "name": "volunteer-collection-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nede index.js",
+    "start": "node index.js",
     "start:dev": "nodemon index.js"
   },
   "author": "",
@@ -17,5 +16,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.0",
     "nodemon": "^3.0.1"
-  }
+  },
+  "description": ""
 }
