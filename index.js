@@ -11,6 +11,8 @@ import BankModel from "./models/Bank.js";
 import TitleModel from "./models/Title.js";
 import AboutModel from "./models/About.js";
 import dotenv from 'dotenv';
+import cors from 'cors';
+
 
 dotenv.config();
 
@@ -18,7 +20,7 @@ const dbConnectionString = process.env.DB_CONNECTION_STRING;
 const secretKey = process.env.SECRET_KEY;
 
 
-
+const PORT = process.env.PORT || 4444
 
 
 mongoose.connect(dbConnectionString)
@@ -26,6 +28,7 @@ mongoose.connect(dbConnectionString)
 .catch((err)=> {console.log('DB error', err)});
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.post('/auth/login', loginValidator, async (req, res) => {
@@ -57,6 +60,23 @@ app.post('/auth/login', loginValidator, async (req, res) => {
     }
 });
 
+app.post('/admin/logout', (req, res) => {
+    try {
+        const token = req.header('Authorization');
+        if (!token) {
+            return res.status(401).json({ message: 'Токен відсутній. Доступ заборонено.' });
+        }
+        jwt.verify(token, secretKey, (err, decoded) => {
+            if (err) {
+                return res.status(403).json({ message: 'Невірний токен. Доступ заборонено.' });
+            }
+            res.json({ message: 'Адмін вийшов з системи успішно' });
+        });
+    } catch (error) {
+        console.error('Помилка під час виходу', error);
+        res.status(500).json({ message: 'Помилка під час виходу' });
+    }
+});
 app.post('/auth/register' , registerValidator, async (req, res)=>{
     try{
     const errors = validationResult(req);
@@ -262,7 +282,7 @@ app.put('/admin/about', authenticateToken, async (req, res) => {
 
 
 
-app.listen(process.env.PORT || 4444, (err) => {
+app.listen(PORT, (err) => {
     if (err) {
         return console.log(err);
     } else {
