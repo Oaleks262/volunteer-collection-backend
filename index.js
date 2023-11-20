@@ -256,20 +256,73 @@ app.get('/admin/about', authenticateToken, async (req, res) => {
 app.put('/admin/about', authenticateToken, async (req, res) => {
     try {
         const aboutName = req.body.about;
+        
+        // Шукаємо існуючий опис за ім'ям
+        const existingAbout = await AboutModel.findOne({ about: aboutName });
 
-        // Знаходимо існуючий запис за ім'ям або створюємо новий, якщо не існує
-        const existingAbout = await AboutModel.findOneAndUpdate(
-            { about: aboutName },
-            { about: aboutName },
-            { new: true, upsert: true }
-        );
+        if (existingAbout) {
+            // Якщо опис існує, видаляємо його
+            await AboutModel.findByIdAndRemove(existingAbout._id);
+        }
 
-        res.json({ message: "Інформація про опис додана або оновлена", about: existingAbout });
+        // Створюємо новий запис
+        const newAbout = new AboutModel({ about: aboutName });
+        await newAbout.save();
+
+        res.json({ message: "Інформація про опис додана або оновлена", about: newAbout });
     } catch (error) {
         res.status(500).json({ message: "Помилка при додаванні/оновленні інформації про опис" });
     }
 });
 
+// Додайте ендпоінт видалення
+app.delete('/admin/about/:id', authenticateToken, async (req, res) => {
+    try {
+        const aboutId = req.params.id;
+
+        // Знаходимо і видаляємо запис за ідентифікатором
+        const deletedAbout = await AboutModel.findByIdAndDelete(aboutId);
+
+        if (deletedAbout) {
+            res.json({ message: "Інформація про опис видалена", about: deletedAbout });
+        } else {
+            res.status(404).json({ message: "Інформацію про опис не знайдено" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Помилка при видаленні інформації про опис" });
+    }
+});
+// Додайте ендпоінт видалення для bank
+app.delete('/admin/bank/:id', authenticateToken, async (req, res) => {
+    try {
+        const bankId = req.params.id;
+        const deletedBank = await BankModel.findByIdAndDelete(bankId);
+
+        if (!deletedBank) {
+            return res.status(404).json({ message: "Банк не знайдено" });
+        }
+
+        res.json({ message: "Інформація про банк видалена", bank: deletedBank });
+    } catch (error) {
+        res.status(500).json({ message: "Помилка при видаленні інформації про банк" });
+    }
+});
+
+// Додайте ендпоінт видалення для title
+app.delete('/admin/title/:id', authenticateToken, async (req, res) => {
+    try {
+        const titleId = req.params.id;
+        const deletedTitle = await TitleModel.findByIdAndDelete(titleId);
+
+        if (!deletedTitle) {
+            return res.status(404).json({ message: "Заголовок не знайдено" });
+        }
+
+        res.json({ message: "Інформація про заголовок видалена", title: deletedTitle });
+    } catch (error) {
+        res.status(500).json({ message: "Помилка при видаленні інформації про заголовок" });
+    }
+});
 
 
 
