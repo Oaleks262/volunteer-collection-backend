@@ -256,18 +256,15 @@ app.get('/admin/about', authenticateToken, async (req, res) => {
 app.put('/admin/about', authenticateToken, async (req, res) => {
     try {
         const aboutName = req.body.about;
-        
-        // Знаходимо ідентифікатор існуючого опису за ім'ям або створюємо новий, якщо не існує
-        const { _id } = await AboutModel.findOneAndUpdate(
+
+        // Знаходимо існуючий запис за ім'ям або створюємо новий, якщо не існує
+        const existingAbout = await AboutModel.findOneAndUpdate(
             { about: aboutName },
             { about: aboutName },
             { new: true, upsert: true }
         );
 
-        // Видаляємо існуючий запис за ідентифікатором
-        await AboutModel.findByIdAndRemove(_id);
-
-        res.json({ message: "Інформація про опис додана або оновлена" });
+        res.json({ message: "Інформація про опис додана або оновлена", about: existingAbout });
     } catch (error) {
         res.status(500).json({ message: "Помилка при додаванні/оновленні інформації про опис" });
     }
