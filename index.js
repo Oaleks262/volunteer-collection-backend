@@ -160,20 +160,15 @@ app.put('/admin/bank', authenticateToken, async (req, res) => {
         const existingBank = await BankModel.findOne({ bank: bankName });
 
         if (existingBank) {
-            // Якщо банк існує, оновлюємо його дані
-            await BankModel.findOneAndUpdate({ bank: bankName }, { bank: bankName });
-
-            // Після оновлення отримуємо оновлені дані
-            const updatedBank = await BankModel.findOne({ bank: bankName });
-
-            res.json({ message: "Інформація про банк оновлена", bank: updatedBank });
-        } else {
-            // Якщо банк не існує, створюємо новий запис
-            const newBank = new BankModel({ bank: bankName });
-            await newBank.save();
-
-            res.json({ message: "Інформація про банк додана", bank: newBank });
+            // Якщо банк існує, видаляємо його
+            await BankModel.findByIdAndRemove(existingBank._id);
         }
+
+        // Створюємо новий запис
+        const newBank = new BankModel({ bank: bankName });
+        await newBank.save();
+
+        res.json({ message: "Інформація про банк додана або оновлена", bank: newBank });
     } catch (error) {
         res.status(500).json({ message: "Помилка при додаванні/оновленні інформації про банк" });
     }
@@ -210,24 +205,25 @@ app.get('/admin/title', authenticateToken, async (req, res) => {
 app.put('/admin/title', authenticateToken, async (req, res) => {
     try {
         const titleName = req.body.title;
-        
+
         // Шукаємо існуючий банк за ім'ям
         const existingTitle = await TitleModel.findOne({ title: titleName });
 
         if (existingTitle) {
-            // Якщо банк існує, оновлюємо його дані
-            await TitleModel.findOneAndUpdate({ title: titleName }, { title: titleName });
-        } else {
-            // Якщо банк не існує, створюємо новий запис
-            const newTitle = new TitleModel({ title: titleName });
-            await newTitle.save();
+            // Якщо банк існує, видаляємо його
+            await TitleModel.findByIdAndRemove(existingTitle._id);
         }
+
+        // Створюємо новий запис
+        const newTitle = new TitleModel({ title: titleName });
+        await newTitle.save();
 
         res.json({ message: "Інформація про заголовок додана або оновлена" });
     } catch (error) {
         res.status(500).json({ message: "Помилка при додаванні/оновленні інформації про заголовок" });
     }
 });
+
 // 
 app.get('/about', async (req, res) => {
     try {
@@ -261,23 +257,24 @@ app.put('/admin/about', authenticateToken, async (req, res) => {
     try {
         const aboutName = req.body.about;
         
-        // Шукаємо існуючий банк за ім'ям
+        // Шукаємо існуючий опис за ім'ям
         const existingAbout = await AboutModel.findOne({ about: aboutName });
 
         if (existingAbout) {
-            // Якщо банк існує, оновлюємо його дані
-            await AboutModel.findOneAndUpdate({ about: aboutName }, { about: aboutName });
-        } else {
-            // Якщо банк не існує, створюємо новий запис
-            const newAbout = new AboutModel({ about: aboutName });
-            await newAbout.save();
+            // Якщо опис існує, видаляємо його
+            await AboutModel.findByIdAndRemove(existingAbout._id);
         }
 
-        res.json({ message: "Інформація про опис додана або оновлена" });
+        // Створюємо новий запис
+        const newAbout = new AboutModel({ about: aboutName });
+        await newAbout.save();
+
+        res.json({ message: "Інформація про опис додана або оновлена", about: newAbout });
     } catch (error) {
         res.status(500).json({ message: "Помилка при додаванні/оновленні інформації про опис" });
     }
 });
+
 
 
 
