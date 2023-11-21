@@ -31,7 +31,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post('/auth/login', loginValidator, async (req, res) => {
+app.post('/api/auth/login', loginValidator, async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -60,7 +60,7 @@ app.post('/auth/login', loginValidator, async (req, res) => {
     }
 });
 
-app.post('/admin/logout', (req, res) => {
+app.post('/api/admin/logout', (req, res) => {
     try {
         const token = req.header('Authorization');
         if (!token) {
@@ -77,7 +77,7 @@ app.post('/admin/logout', (req, res) => {
         res.status(500).json({ message: 'Помилка під час виходу' });
     }
 });
-app.post('/auth/register' , registerValidator, async (req, res)=>{
+app.post('/api/auth/register' , registerValidator, async (req, res)=>{
     try{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -123,7 +123,7 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
-app.get('/bank', async (req, res) => {
+app.get('/api/bank', async (req, res) => {
     try {
         // Отримайте інформацію про банк з бази даних
         const bankInfo = await BankModel.findOne();
@@ -137,8 +137,7 @@ app.get('/bank', async (req, res) => {
         res.status(500).json({ message: "Помилка при отриманні інформації про банк" });
     }
 });
-
-app.get('/admin/bank', authenticateToken, async (req, res) => {
+app.get('/api/admin/bank', authenticateToken, async (req, res) => {
     try {
         // Отримайте інформацію про банк з бази даних
         const bankInfo = await BankModel.findOne();
@@ -152,7 +151,7 @@ app.get('/admin/bank', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Помилка при отриманні інформації про банк" });
     }
 });
-app.put('/admin/bank', authenticateToken, async (req, res) => {
+app.put('/api/admin/bank', authenticateToken, async (req, res) => {
     try {
         const bankName = req.body.bank;
         
@@ -174,7 +173,7 @@ app.put('/admin/bank', authenticateToken, async (req, res) => {
     }
 });
 // 
-app.get('/title', async (req, res) => {
+app.get('/api/title', async (req, res) => {
     try {
         // Отримайте інформацію про банк з бази даних
         const titleInfo = await TitleModel.findOne();
@@ -188,7 +187,7 @@ app.get('/title', async (req, res) => {
         res.status(500).json({ message: "Помилка при отриманні інформації про заголовок" });
     }
 });
-app.get('/admin/title', authenticateToken, async (req, res) => {
+app.get('/api/admin/title', authenticateToken, async (req, res) => {
     try {
         // Отримайте інформацію про банк з бази даних
         const titleInfo = await TitleModel.findOne();
@@ -202,7 +201,7 @@ app.get('/admin/title', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Помилка при отриманні інформації про заголовок" });
     }
 });
-app.put('/admin/title', authenticateToken, async (req, res) => {
+app.put('/api/admin/title', authenticateToken, async (req, res) => {
     try {
         const titleName = req.body.title;
 
@@ -218,14 +217,13 @@ app.put('/admin/title', authenticateToken, async (req, res) => {
         const newTitle = new TitleModel({ title: titleName });
         await newTitle.save();
 
-        res.json({ message: "Інформація про заголовок додана або оновлена" });
+        res.json({ message: "Інформація про заголовок додана або оновлена", title: titleName });
     } catch (error) {
         res.status(500).json({ message: "Помилка при додаванні/оновленні інформації про заголовок" });
     }
 });
-
 // 
-app.get('/about', async (req, res) => {
+app.get('/api/about', async (req, res) => {
     try {
         // Отримайте інформацію про банк з бази даних
         const aboutInfo = await AboutModel.findOne();
@@ -239,7 +237,7 @@ app.get('/about', async (req, res) => {
         res.status(500).json({ message: "Помилка при отриманні інформації про опис" });
     }
     });
-app.get('/admin/about', authenticateToken, async (req, res) => {
+app.get('/api/admin/about', authenticateToken, async (req, res) => {
     try {
         // Отримайте інформацію про банк з бази даних
         const aboutInfo = await AboutModel.findOne();
@@ -253,7 +251,7 @@ app.get('/admin/about', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Помилка при отриманні інформації про опис" });
     }
 });
-app.put('/admin/about', authenticateToken, async (req, res) => {
+app.put('/api/admin/about', authenticateToken, async (req, res) => {
     try {
         const aboutName = req.body.about;
         
@@ -274,9 +272,8 @@ app.put('/admin/about', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Помилка при додаванні/оновленні інформації про опис" });
     }
 });
-
 // Додайте ендпоінт видалення
-app.delete('/admin/about/:id', authenticateToken, async (req, res) => {
+app.delete('/api/admin/about/:id', authenticateToken, async (req, res) => {
     try {
         const aboutId = req.params.id;
 
@@ -293,7 +290,7 @@ app.delete('/admin/about/:id', authenticateToken, async (req, res) => {
     }
 });
 // Додайте ендпоінт видалення для bank
-app.delete('/admin/bank/:id', authenticateToken, async (req, res) => {
+app.delete('/api/admin/bank/:id', authenticateToken, async (req, res) => {
     try {
         const bankId = req.params.id;
         const deletedBank = await BankModel.findByIdAndDelete(bankId);
@@ -307,9 +304,8 @@ app.delete('/admin/bank/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Помилка при видаленні інформації про банк" });
     }
 });
-
 // Додайте ендпоінт видалення для title
-app.delete('/admin/title/:id', authenticateToken, async (req, res) => {
+app.delete('/api/admin/title/:id', authenticateToken, async (req, res) => {
     try {
         const titleId = req.params.id;
         const deletedTitle = await TitleModel.findByIdAndDelete(titleId);
