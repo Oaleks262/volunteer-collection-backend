@@ -14,6 +14,10 @@ const cors = require('cors');
 
 dotenv.config();
 
+const DB_CONNECTION_STRING='mongodb+srv://Admin:qwer1234@cluster0.lyfarnn.mongodb.net/baza?retryWrites=true&w=majority';
+const SECRET_KEY='secret123';
+
+
 const dbConnectionString = process.env.DB_CONNECTION_STRING;
 const secretKey = process.env.SECRET_KEY;
 
