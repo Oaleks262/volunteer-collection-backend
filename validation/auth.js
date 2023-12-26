@@ -1,10 +1,10 @@
-import { body } from 'express-validator';
+const { body } = require('express-validator');
 
-export const registerValidator = [
+exports.registerValidator = [
     body('email').isEmail(),
     body('password').isLength({min: 5})
 ];
-export const loginValidator = [
+exports.loginValidator = [
     body('email').isEmail(),
     body('password').isLength({ min: 5 }),
 ];
