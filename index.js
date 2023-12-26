@@ -1,17 +1,15 @@
-
-import express from "express";
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import mongoose from "mongoose";
-import {registerValidator} from "./validation/auth.js";
-import {validationResult} from "express-validator";
-import {loginValidator} from "./validation/auth.js";
-import UserModel from "./models/User.js";
-import BankModel from "./models/Bank.js";
-import TitleModel from "./models/Title.js";
-import AboutModel from "./models/About.js";
-import dotenv from 'dotenv';
-import cors from 'cors';
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const { registerValidator, loginValidator } = require('./validation/auth.js');
+const { validationResult } = require('express-validator');
+const UserModel = require('./models/User.js');
+const BankModel = require('./models/Bank.js');
+const TitleModel = require('./models/Title.js');
+const AboutModel = require('./models/About.js');
+const dotenv = require('dotenv');
+const cors = require('cors');
 
 
 dotenv.config();
